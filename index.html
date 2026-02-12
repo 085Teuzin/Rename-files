@@ -71,14 +71,10 @@
 <div class="container">
     <h1>Rename Files</h1>
     <div class="input-group">
-        <label>1. CARREGAR ARQUIVOS</label>
-        <div id="drop-zone" class="drop-zone">Arraste arquivos aqui ou clique para selecionar</div>
-        <input type="file" id="file-input" multiple webkitdirectory directory style="display:none">
-        <div id="file-count" style="font-size: 0.8em; margin-top: 8px; color: #888;">Nenhum arquivo selecionado.</div>
-    </div>
-    <div class="input-group">
-        <label>FILTRAR POR EXTENSÃO (ex: .jpg, .png)</label>
-        <input type="text" id="filter-ext" placeholder="Deixe vazio para todos">
+        <label>1. CARREGAR ARQUIVOS (MP3, MP4, WAV, OPUS)</label>
+        <div id="drop-zone" class="drop-zone">Arraste áudios/vídeos aqui ou clique</div>
+        <input type="file" id="file-input" multiple accept=".mp3,.mp4,.wav,.opus" style="display:none">
+        <div id="file-count" style="font-size: 0.8em; margin-top: 8px; color: #888;">Nenhum arquivo válido selecionado.</div>
     </div>
     <div class="input-group">
         <label>ORDENAR ANTES DE RENOMEAR</label>
@@ -93,7 +89,7 @@
         <div class="accordion-header">Sequencial e Data <span>+</span></div>
         <div class="accordion-content">
             <label>Nome Base (Use [seq], [date_mod]):</label>
-            <input type="text" id="sequential-name" class="save-state" placeholder="Ex: Foto_[seq]">
+            <input type="text" id="sequential-name" class="save-state" placeholder="Ex: Audio_[seq]">
             <div style="display:flex; gap:10px; margin-top:10px">
                 <input type="number" id="start-number" class="save-state" value="1">
                 <input type="number" id="padding-number" class="save-state" value="2">
@@ -128,8 +124,17 @@
         </div>
     </div>
     <div class="accordion">
-        <div class="accordion-header">Limpeza e Caixa <span>+</span></div>
+        <div class="accordion-header">Extensão e Caixa <span>+</span></div>
         <div class="accordion-content">
+            <label>Alterar Extensão para:</label>
+            <select id="change-ext" class="save-state">
+                <option value="keep">Manter original</option>
+                <option value=".mp3">.mp3</option>
+                <option value=".mp4">.mp4</option>
+                <option value=".wav">.wav</option>
+                <option value=".opus">.opus</option>
+            </select>
+            <label style="margin-top:10px">Padronizar Caixa:</label>
             <select id="case-standardization" class="save-state">
                 <option value="none">Manter original</option>
                 <option value="lower">minúsculas</option>
@@ -156,6 +161,7 @@
     const dropZone = document.getElementById('drop-zone');
     const resultList = document.getElementById('result-list');
     const downloadZip = document.getElementById('download-zip');
+    const allowedExts = ['mp3', 'mp4', 'wav', 'opus'];
     let originalFiles = [];
     let processedFiles = [];
 
@@ -167,7 +173,7 @@
     });
 
     const loadSettings = () => {
-        document.querySelectorAll('.save-state, #filter-ext').forEach(el => {
+        document.querySelectorAll('.save-state').forEach(el => {
             const saved = localStorage.getItem(el.id);
             if (saved !== null) {
                 if (el.type === 'checkbox') el.checked = saved === 'true';
@@ -180,9 +186,16 @@
         });
     };
 
+    const filterFiles = (files) => {
+        return Array.from(files).filter(f => {
+            const ext = f.name.split('.').pop().toLowerCase();
+            return allowedExts.includes(ext);
+        });
+    };
+
     const handleFiles = (files) => {
-        originalFiles = Array.from(files);
-        document.getElementById('file-count').innerText = `${originalFiles.length} arquivo(s) carregado(s).`;
+        originalFiles = filterFiles(files);
+        document.getElementById('file-count').innerText = `${originalFiles.length} arquivo(s) válido(s) carregado(s).`;
         processPreview();
     };
 
@@ -194,9 +207,6 @@
 
     function processPreview() {
         let files = [...originalFiles];
-        const extFilter = document.getElementById('filter-ext').value.toLowerCase().split(',').map(e => e.trim()).filter(e => e);
-        if(extFilter.length > 0) files = files.filter(f => extFilter.some(ext => f.name.toLowerCase().endsWith(ext)));
-
         const order = document.getElementById('sort-order').value;
         if(order === 'name') files.sort((a,b) => a.name.localeCompare(b.name));
         else if(order === 'date-asc') files.sort((a,b) => a.lastModified - b.lastModified);
@@ -215,6 +225,7 @@
             prefix: document.getElementById('prefix-string').value,
             suffix: document.getElementById('suffix-string').value,
             case: document.getElementById('case-standardization').value,
+            newExt: document.getElementById('change-ext').value,
             noParen: document.getElementById('remove-parentheses').checked,
             cleanSpace: document.getElementById('remove-multiple-spaces').checked
         };
@@ -223,6 +234,7 @@
         processedFiles = files.map((f, i) => {
             let name = f.name; let ext = ''; const lastDot = name.lastIndexOf('.');
             if(lastDot !== -1) { ext = name.substring(lastDot); name = name.substring(0, lastDot); }
+            if(options.newExt !== 'keep') ext = options.newExt;
             if(options.baseName) {
                 name = options.baseName.includes('[seq]') ? options.baseName.replace('[seq]', (i + options.start).toString().padStart(options.pad, '0')) : options.baseName + (i + options.start).toString().padStart(options.pad, '0');
             }
@@ -253,12 +265,19 @@
     }
 
     downloadZip.onclick = async () => {
-        const zip = new JSZip();
-        processedFiles.forEach(item => zip.file(item.newName, item.file));
-        const content = await zip.generateAsync({type: "blob"});
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(content);
-        link.download = "arquivos_renomeados.zip"; link.click();
+        downloadZip.disabled = true;
+        const originalText = downloadZip.innerText;
+        downloadZip.innerText = "⚙️ Carregando...";
+        try {
+            const zip = new JSZip();
+            processedFiles.forEach(item => zip.file(item.newName, item.file));
+            const content = await zip.generateAsync({type: "blob"});
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(content);
+            link.download = "arquivos_renomeados.zip"; link.click();
+        } catch (e) { console.error(e); }
+        downloadZip.innerText = originalText;
+        downloadZip.disabled = false;
     };
 
     document.getElementById('clear-btn').onclick = () => { localStorage.clear(); location.reload(); };
