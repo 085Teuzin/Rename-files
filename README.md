@@ -1,6 +1,6 @@
 # 📂 Rename Files
 
-Rename Files: [085teuzin.github.io/Rename-Files](https://085teuzin.github.io/Rename-Files)
+Rename Files: [085teuzin.github.io/Rename-Files](https://085teuzin.github.io/Rename-files/)
 
 ![Versão](https://img.shields.io/badge/version-2.0.0-orange)
 ![Licença](https://img.shields.io/badge/license-All%20Rights%20Reserved-red)
