@@ -1,7 +1,9 @@
-const CACHE_NAME = 'rf-v1';
+const CACHE_NAME = 'rf-v2';
 const ASSETS = [
   './',
   './index.html',
+  './manifest.json',
+  './icon.png',
   'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'
 ];
 
