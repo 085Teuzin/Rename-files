@@ -6,7 +6,7 @@
     <title>Rename Files - Made By: @085_Teuzinnn</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#ff4500">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2965/2965301.png">
+    <link rel="apple-touch-icon" href="icon.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         :root {
@@ -20,332 +20,189 @@
             --input-bg: #121212;
             --shadow: 0 8px 32px rgba(0,0,0,0.5);
         }
-
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 15px;
+            margin: 0; padding: 15px;
             background-color: var(--bg-color);
             color: var(--text-color);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
-
         .container {
-            width: 100%;
-            max-width: 650px;
+            width: 100%; max-width: 650px;
             background: var(--container-bg);
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
+            padding: 25px; border-radius: 16px;
+            box-shadow: var(--shadow); border: 1px solid var(--border-color);
         }
-
-        h1 {
-            color: var(--primary-color);
-            text-align: center;
-            margin: 0 0 20px 0;
-            font-size: 1.8em;
-            letter-spacing: -1px;
+        h1 { color: var(--primary-color); text-align: center; margin: 0 0 20px 0; font-size: 1.8em; letter-spacing: -1px; }
+        h2 { font-size: 1.2em; color: var(--primary-color); border-left: 4px solid var(--primary-color); padding-left: 10px; margin: 25px 0 15px 0; }
+        .input-group { margin-bottom: 20px; background: var(--card-bg); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); }
+        .drop-zone {
+            border: 2px dashed var(--primary-color);
+            padding: 20px; text-align: center; border-radius: 10px;
+            cursor: pointer; transition: background 0.3s; margin-bottom: 10px;
         }
-
-        h2 {
-            font-size: 1.2em;
-            color: var(--primary-color);
-            border-left: 4px solid var(--primary-color);
-            padding-left: 10px;
-            margin: 25px 0 15px 0;
+        .drop-zone.drag-over { background: rgba(255, 69, 0, 0.1); }
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9em; color: #bbb; }
+        input[type="text"], input[type="file"], input[type="number"], select {
+            width: 100%; padding: 12px; border: 1px solid var(--border-color);
+            border-radius: 8px; background-color: var(--input-bg); color: #fff; font-size: 1rem; outline: none;
         }
-
-        .input-group {
-            margin-bottom: 20px;
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 0.9em;
-            color: #bbb;
-        }
-
-        input[type="text"], 
-        input[type="file"], 
-        input[type="number"], 
-        select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background-color: var(--input-bg);
-            color: #fff;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        input:focus, select:focus {
-            border-color: var(--primary-color);
-        }
-
-        .accordion {
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            margin-bottom: 12px;
-            overflow: hidden;
-            background: var(--card-bg);
-        }
-
-        .accordion-header {
-            padding: 15px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-            transition: background 0.2s;
-            user-select: none;
-        }
-
-        .accordion-header:hover {
-            background: #2d2d2d;
-        }
-
-        .accordion-header.active {
-            background: var(--primary-color);
-            color: #fff;
-        }
-
-        .accordion-content {
-            padding: 0 15px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out, padding 0.3s;
-        }
-
-        .accordion-content.open {
-            padding: 15px;
-            max-height: 1000px;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 1em;
-            transition: transform 0.1s, background 0.2s;
-            margin-top: 10px;
-        }
-
-        .btn:active { transform: scale(0.98); }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .btn-primary:disabled {
-            background-color: #444;
-            cursor: not-allowed;
-        }
-
-        .btn-zip {
-            background-color: #2ecc71;
-            color: white;
-        }
-
-        .btn-danger {
-            background-color: #c0392b;
-            color: white;
-        }
-
-        .file-item {
-            background: var(--card-bg);
-            padding: 15px;
-            margin-top: 10px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
+        input:focus, select:focus { border-color: var(--primary-color); }
+        .accordion { border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 12px; overflow: hidden; background: var(--card-bg); }
+        .accordion-header { padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; user-select: none; }
+        .accordion-header.active { background: var(--primary-color); color: #fff; }
+        .accordion-content { padding: 0 15px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .accordion-content.open { padding: 15px; max-height: 1000px; }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1em; margin-top: 10px; }
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:disabled { background-color: #444; cursor: not-allowed; }
+        .btn-zip { background-color: #2ecc71; color: white; }
+        .btn-danger { background-color: #c0392b; color: white; }
+        .file-item { background: var(--card-bg); padding: 15px; margin-top: 10px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 5px; }
         .old-name { font-size: 0.8em; color: #888; word-break: break-all; }
         .new-name { font-weight: bold; color: var(--primary-color); word-break: break-all; }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 10px 0;
-        }
-
+        .checkbox-item { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
         .checkbox-item input { width: auto; }
-
-        footer {
-            margin-top: 30px;
-            padding: 20px;
-            text-align: center;
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        footer a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        @media (max-width: 480px) {
-            .container { padding: 15px; }
-            h1 { font-size: 1.5em; }
-        }
+        footer { margin-top: 30px; padding: 20px; text-align: center; color: #666; font-size: 0.9em; }
+        footer a { color: var(--primary-color); text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
-
 <div class="container">
     <h1>Rename Files</h1>
-
     <div class="input-group">
         <label>1. CARREGAR ARQUIVOS</label>
-        <input type="file" id="file-input" multiple webkitdirectory directory>
+        <div id="drop-zone" class="drop-zone">Arraste arquivos aqui ou clique para selecionar</div>
+        <input type="file" id="file-input" multiple webkitdirectory directory style="display:none">
         <div id="file-count" style="font-size: 0.8em; margin-top: 8px; color: #888;">Nenhum arquivo selecionado.</div>
     </div>
-
+    <div class="input-group">
+        <label>FILTRAR POR EXTENSÃO (ex: .jpg, .png)</label>
+        <input type="text" id="filter-ext" placeholder="Deixe vazio para todos">
+    </div>
     <div class="input-group">
         <label>ORDENAR ANTES DE RENOMEAR</label>
-        <select id="sort-order">
+        <select id="sort-order" class="save-state">
             <option value="name">Por Nome (A-Z)</option>
             <option value="date-asc">Por Data: Antigos primeiro</option>
             <option value="date-desc">Por Data: Novos primeiro</option>
         </select>
     </div>
-
-    <h2>Dica Resumida</h2>
-
+    <h2>Configurações</h2>
     <div class="accordion">
         <div class="accordion-header">Sequencial e Data <span>+</span></div>
         <div class="accordion-content">
             <label>Nome Base (Use [seq], [date_mod]):</label>
-            <input type="text" id="sequential-name" placeholder="Ex: Viagem_[seq]">
+            <input type="text" id="sequential-name" class="save-state" placeholder="Ex: Foto_[seq]">
             <div style="display:flex; gap:10px; margin-top:10px">
-                <input type="number" id="start-number" value="1" placeholder="Início">
-                <input type="number" id="padding-number" value="2" placeholder="Dígitos">
+                <input type="number" id="start-number" class="save-state" value="1">
+                <input type="number" id="padding-number" class="save-state" value="2">
             </div>
             <label style="margin-top:10px">Formato de Data:</label>
-            <select id="date-format-select">
+            <select id="date-format-select" class="save-state">
                 <option value="none">Não usar</option>
                 <option value="YYYY-MM-DD">2026-02-11</option>
                 <option value="DD-MM-YYYY">11-02-2026</option>
             </select>
         </div>
     </div>
-
     <div class="accordion">
         <div class="accordion-header">Substituição <span>+</span></div>
         <div class="accordion-content">
-            <input type="text" id="find-string" placeholder="Localizar texto">
-            <input type="text" id="replace-string" placeholder="Substituir por" style="margin-top:10px">
+            <input type="text" id="find-string" class="save-state" placeholder="Localizar texto">
+            <input type="text" id="replace-string" class="save-state" placeholder="Substituir por" style="margin-top:10px">
             <div class="checkbox-item">
-                <input type="checkbox" id="use-regex"> <label>Usar Regex</label>
+                <input type="checkbox" id="use-regex" class="save-state"> <label>Usar Regex</label>
             </div>
         </div>
     </div>
-
     <div class="accordion">
         <div class="accordion-header">Corte e Ajustes <span>+</span></div>
         <div class="accordion-content">
             <div style="display:flex; gap:10px">
-                <input type="number" id="trim-start" placeholder="Cortar Início">
-                <input type="number" id="trim-end" placeholder="Cortar Fim">
+                <input type="number" id="trim-start" class="save-state" placeholder="Cortar Início">
+                <input type="number" id="trim-end" class="save-state" placeholder="Cortar Fim">
             </div>
-            <input type="text" id="prefix-string" placeholder="Prefixo" style="margin-top:10px">
-            <input type="text" id="suffix-string" placeholder="Sufixo" style="margin-top:10px">
+            <input type="text" id="prefix-string" class="save-state" placeholder="Prefixo" style="margin-top:10px">
+            <input type="text" id="suffix-string" class="save-state" placeholder="Sufixo" style="margin-top:10px">
         </div>
     </div>
-
     <div class="accordion">
         <div class="accordion-header">Limpeza e Caixa <span>+</span></div>
         <div class="accordion-content">
-            <select id="case-standardization">
+            <select id="case-standardization" class="save-state">
                 <option value="none">Manter original</option>
                 <option value="lower">minúsculas</option>
                 <option value="upper">MAIÚSCULAS</option>
                 <option value="title">Tipo Título</option>
             </select>
             <div class="checkbox-item">
-                <input type="checkbox" id="remove-parentheses"> <label>Remover () e []</label>
+                <input type="checkbox" id="remove-parentheses" class="save-state"> <label>Remover () e []</label>
             </div>
             <div class="checkbox-item">
-                <input type="checkbox" id="remove-multiple-spaces"> <label>Limpar espaços extras</label>
+                <input type="checkbox" id="remove-multiple-spaces" class="save-state"> <label>Limpar espaços extras</label>
             </div>
         </div>
     </div>
-
-    <button id="apply-btn" class="btn btn-primary" disabled>APLICAR REGRAS / PRÉVIA</button>
     <button id="download-zip" class="btn btn-zip" disabled>BAIXAR TUDO (ZIP)</button>
-    <button id="clear-btn" class="btn btn-danger">LIMPAR OPÇÕES</button>
-
+    <button id="clear-btn" class="btn btn-danger">LIMPAR TUDO</button>
     <div id="result-list" style="margin-top: 20px;"></div>
 </div>
-
-<footer class="text-center mt-5 text-gray-500 text-sm">
-    Made By: <a href="https://instagram.com/085_Teuzinnn" target="_blank" class="text-blue-400 hover:text-blue-300 font-semibold transition duration-200">@085_Teuzinnn</a>
+<footer>
+    Made By: <a href="https://instagram.com/085_Teuzinnn" target="_blank">@085_Teuzinnn</a>
 </footer>
-
 <script>
     const fileInput = document.getElementById('file-input');
-    const sortOrder = document.getElementById('sort-order');
+    const dropZone = document.getElementById('drop-zone');
     const resultList = document.getElementById('result-list');
-    const applyBtn = document.getElementById('apply-btn');
     const downloadZip = document.getElementById('download-zip');
-    
     let originalFiles = [];
     let processedFiles = [];
 
     document.querySelectorAll('.accordion-header').forEach(header => {
         header.onclick = () => {
-            const content = header.nextElementSibling;
             header.classList.toggle('active');
-            content.classList.toggle('open');
+            header.nextElementSibling.classList.toggle('open');
         };
     });
 
-    fileInput.onchange = (e) => {
-        originalFiles = Array.from(e.target.files);
-        document.getElementById('file-count').innerText = `${originalFiles.length} arquivo(s) carregado(s).`;
-        applyBtn.disabled = originalFiles.length === 0;
-        if(originalFiles.length > 0) processPreview();
+    const loadSettings = () => {
+        document.querySelectorAll('.save-state').forEach(el => {
+            const saved = localStorage.getItem(el.id);
+            if (saved !== null) {
+                if (el.type === 'checkbox') el.checked = saved === 'true';
+                else el.value = saved;
+            }
+            el.addEventListener('input', () => {
+                localStorage.setItem(el.id, el.type === 'checkbox' ? el.checked : el.value);
+                if(originalFiles.length > 0) processPreview();
+            });
+        });
     };
 
-    sortOrder.onchange = () => { if(originalFiles.length > 0) processPreview(); };
+    const handleFiles = (files) => {
+        originalFiles = Array.from(files);
+        document.getElementById('file-count').innerText = `${originalFiles.length} arquivo(s) carregado(s).`;
+        processPreview();
+    };
+
+    dropZone.onclick = () => fileInput.click();
+    dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); };
+    dropZone.ondragleave = () => dropZone.classList.remove('drag-over');
+    dropZone.ondrop = (e) => { e.preventDefault(); dropZone.classList.remove('drag-over'); handleFiles(e.dataTransfer.files); };
+    fileInput.onchange = (e) => handleFiles(e.target.files);
+    document.getElementById('filter-ext').oninput = () => processPreview();
 
     function processPreview() {
         let files = [...originalFiles];
-        const order = sortOrder.value;
+        const extFilter = document.getElementById('filter-ext').value.toLowerCase().split(',').map(e => e.trim()).filter(e => e);
+        if(extFilter.length > 0) files = files.filter(f => extFilter.some(ext => f.name.toLowerCase().endsWith(ext)));
 
-        if(order === 'name') {
-            files.sort((a,b) => a.name.localeCompare(b.name));
-        } else if(order === 'date-asc') {
-            files.sort((a,b) => a.lastModified - b.lastModified);
-        } else if(order === 'date-desc') {
-            files.sort((a,b) => b.lastModified - a.lastModified);
-        }
+        const order = document.getElementById('sort-order').value;
+        if(order === 'name') files.sort((a,b) => a.name.localeCompare(b.name));
+        else if(order === 'date-asc') files.sort((a,b) => a.lastModified - b.lastModified);
+        else if(order === 'date-desc') files.sort((a,b) => b.lastModified - a.lastModified);
 
         const options = {
             baseName: document.getElementById('sequential-name').value,
@@ -366,85 +223,49 @@
 
         resultList.innerHTML = '';
         processedFiles = files.map((f, i) => {
-            let name = f.name;
-            let ext = '';
-            const lastDot = name.lastIndexOf('.');
-            if(lastDot !== -1) {
-                ext = name.substring(lastDot);
-                name = name.substring(0, lastDot);
-            }
-
+            let name = f.name; let ext = ''; const lastDot = name.lastIndexOf('.');
+            if(lastDot !== -1) { ext = name.substring(lastDot); name = name.substring(0, lastDot); }
             if(options.baseName) {
-                name = options.baseName;
-                if(name.includes('[seq]')) {
-                    name = name.replace('[seq]', (i + options.start).toString().padStart(options.pad, '0'));
-                } else {
-                    name += (i + options.start).toString().padStart(options.pad, '0');
-                }
+                name = options.baseName.includes('[seq]') ? options.baseName.replace('[seq]', (i + options.start).toString().padStart(options.pad, '0')) : options.baseName + (i + options.start).toString().padStart(options.pad, '0');
             }
-
             if(options.dateFmt !== 'none') {
                 const d = new Date(f.lastModified);
-                const ds = options.dateFmt === 'YYYY-MM-DD' ? 
-                    d.toISOString().split('T')[0] : 
-                    `${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
-                name = name.replace('[date_mod]', ds);
+                const ds = options.dateFmt === 'YYYY-MM-DD' ? d.toISOString().split('T')[0] : `${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
+                name = name.includes('[date_mod]') ? name.replace('[date_mod]', ds) : name + '_' + ds;
             }
-
             if(options.tStart > 0) name = name.substring(options.tStart);
-            if(options.tEnd > 0) name = name.substring(0, name.length - options.tEnd);
-
+            if(options.tEnd > 0) name = name.substring(0, Math.max(0, name.length - options.tEnd));
             if(options.noParen) name = name.replace(/[\(\[].*?[\)\]]/g, '');
-
             if(options.find) {
                 const search = options.regex ? new RegExp(options.find, 'g') : options.find;
                 name = name.split(search).join(options.replace);
             }
-
             name = options.prefix + name + options.suffix;
-
             if(options.case === 'lower') name = name.toLowerCase();
-            if(options.case === 'upper') name = name.toUpperCase();
-            if(options.case === 'title') name = name.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
-
+            else if(options.case === 'upper') name = name.toUpperCase();
+            else if(options.case === 'title') name = name.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
             if(options.cleanSpace) name = name.replace(/\s+/g, ' ').trim();
-
             const finalName = name + ext;
-            
-            const div = document.createElement('div');
-            div.className = 'file-item';
+            const div = document.createElement('div'); div.className = 'file-item';
             div.innerHTML = `<span class="old-name">${f.name}</span><span class="new-name">${finalName}</span>`;
             resultList.appendChild(div);
-
             return { file: f, newName: finalName };
         });
-
         downloadZip.disabled = processedFiles.length === 0;
     }
 
-    applyBtn.onclick = processPreview;
-
     downloadZip.onclick = async () => {
         const zip = new JSZip();
-        processedFiles.forEach(item => {
-            zip.file(item.newName, item.file);
-        });
+        processedFiles.forEach(item => zip.file(item.newName, item.file));
         const content = await zip.generateAsync({type: "blob"});
         const link = document.createElement('a');
         link.href = URL.createObjectURL(content);
-        link.download = "arquivos_renomeados.zip";
-        link.click();
+        link.download = "arquivos_renomeados.zip"; link.click();
     };
 
-    document.getElementById('clear-btn').onclick = () => {
-        location.reload();
-    };
-
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js')
-            .then(() => console.log("SW OK"))
-            .catch(err => console.log("SW ERR", err));
-    }
+    document.getElementById('clear-btn').onclick = () => { localStorage.clear(); location.reload(); };
+    loadSettings();
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>
 </body>
 </html>
